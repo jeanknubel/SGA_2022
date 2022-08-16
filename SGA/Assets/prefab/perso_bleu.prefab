@@ -179,18 +179,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ground_check: {fileID: 62124537705886063}
-  hSpeed: 10
+  hSpeed: 7
   jumpForce: 10
   velPowGround: 1.1
-  velPowAir: 0.75
+  velPowAir: 0.7
   accel: 8
   deccel: 24
   jumpReduce: 0.7
   gravityScale: 2
   gravityScaleMultiplier: 1.9
   wallFriction: 34
-  wallJumpForce: {x: 10, y: 15}
+  knockback: 20
+  wallJumpForce: {x: 10, y: 10}
   left: a
   right: d
   jump: w
   respawnPosition: {x: -5, y: 2}
+  upStage: {fileID: 0}
+  canDoubleJump: 1
+  doubleJumpForce: 7

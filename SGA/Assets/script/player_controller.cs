@@ -11,6 +11,9 @@ public class player_controller : MonoBehaviour
     private float hSpeed, jumpForce, velPowGround, velPowAir, accel, deccel, jumpReduce, gravityScale, gravityScaleMultiplier, wallFriction;
 
     [SerializeField]
+    private float knockback;
+
+    [SerializeField]
     private Vector2 wallJumpForce;
 
     [SerializeField]
@@ -19,19 +22,30 @@ public class player_controller : MonoBehaviour
     [SerializeField]
     private Vector2 respawnPosition;
 
+    [SerializeField]
+    private Transform upStage;
+
+    [SerializeField]
+    private bool canDoubleJump;
+    [SerializeField]
+    private float doubleJumpForce;
+
     private float hInpt;
     private float maxSpeed, speedDif, accelRate;
-    private bool wantJump, triggerJump, isGrounded, isOnWall;
+    private bool wantJump, triggerJump, isGrounded, isOnWall, isJumping;
     private Rigidbody2D rb;
     private int groundLayer;
     private float playerDirection;
+    private bool doubleJumped;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         groundLayer = LayerMask.GetMask("Ground");
         playerDirection = 1;
+        doubleJumped = false;
     }
+
     void Update()
     {
         //reset pour si on tombe
@@ -47,12 +61,27 @@ public class player_controller : MonoBehaviour
         wantJump = Input.GetKey(jump);
         triggerJump = Input.GetKeyDown(jump);
         if (triggerJump && isGrounded)
+        {
+            isJumping = true;
             rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+        }
+        if (rb.velocity.y < 0) isJumping = false;
+        
+        if(rb.velocity.y != 0 && !isGrounded && !doubleJumped && canDoubleJump && triggerJump && !isOnWall)
+        {
+            isJumping = true;
+            doubleJumped = true;
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+            rb.AddForce(new Vector2(0f, doubleJumpForce), ForceMode2D.Impulse);
+        }
+
+
         //----------------------------------------------------------------------------
 
     }
     private void FixedUpdate()
     {
+        if (isGrounded) doubleJumped = false;
         //movement avec acceleration -------------------------------------------------
         maxSpeed = hInpt * hSpeed;
         speedDif = maxSpeed - rb.velocity.x;
@@ -80,11 +109,27 @@ public class player_controller : MonoBehaviour
             rb.AddForce(new Vector2(wallJumpForce.x * Mathf.Sign(hInpt), wallJumpForce.y), ForceMode2D.Impulse);
 
         //permet de sauter plus ou moins haut selon comment on appuie sur le bouton
-        if (rb.velocity.y > 0 && !wantJump)
+        if (rb.velocity.y > 0 && !wantJump && isJumping)
             rb.AddForce(Vector2.down * rb.velocity.y * (1 - jumpReduce), ForceMode2D.Impulse);
 
         //plus de gravité quand on tombe
         if (rb.velocity.y < 0) rb.gravityScale = gravityScale * gravityScaleMultiplier;
         else rb.gravityScale = gravityScale;
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        GameObject other = collision.gameObject;
+        if (other.layer == LayerMask.NameToLayer("Fall"))
+        {
+            rb.velocity = Vector2.zero;
+            transform.position = upStage.position;
+        }
+        if(other.layer == LayerMask.NameToLayer("Player"))
+        {
+            Vector2 ejection = collision.GetContact(0).normal;
+            if (ejection.y !=0 ) ejection.y /= 2;
+
+            rb.AddForce(ejection* knockback, ForceMode2D.Impulse);
+        }
     }
 }
