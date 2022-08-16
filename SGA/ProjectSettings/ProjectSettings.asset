@@ -645,7 +645,7 @@ PlayerSettings:
   vrEditorSettings: {}
   cloudServicesEnabled:
     Build: 0
-    Collab: 1
+    Collab: 0
     Game Performance: 0
     Purchasing: 0
     UDP: 0
@@ -667,7 +667,7 @@ PlayerSettings:
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: SGA
-  organizationId: jeanbonbeurre
+  organizationId: spritetheo
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 
