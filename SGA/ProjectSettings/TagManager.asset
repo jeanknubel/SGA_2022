@@ -15,7 +15,7 @@ TagManager:
   - Ground
   - Fall
   - Player
-  - 
+  - Food
   - 
   - 
   - 
@@ -41,6 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: BackGround
+    uniqueID: 2899641213
+    locked: 0
   - name: cadre
     uniqueID: 159517771
+    locked: 0
+  - name: character
+    uniqueID: 3358638251
     locked: 0
