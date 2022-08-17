@@ -41,7 +41,7 @@ public class player_controller : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        groundLayer = LayerMask.GetMask("Ground");
+        groundLayer = LayerMask.GetMask("Ground", "Food");
         playerDirection = 1;
         doubleJumped = false;
     }
@@ -51,8 +51,8 @@ public class player_controller : MonoBehaviour
         //reset pour si on tombe
         if (Input.GetKeyDown("r"))
         {
-            rb.transform.position = respawnPosition;
-            rb.velocity = Vector2.zero;
+            respawn();
+
 
         }
 
@@ -60,27 +60,27 @@ public class player_controller : MonoBehaviour
         hInpt = Input.GetKey(left) ? -1 : Input.GetKey(right) ? 1 : 0;
         wantJump = Input.GetKey(jump);
         triggerJump = Input.GetKeyDown(jump);
+
+        //----------------------------------------------------------------------------
         if (triggerJump && isGrounded)
         {
             isJumping = true;
             rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
         }
         if (rb.velocity.y < 0) isJumping = false;
-        
-        if(rb.velocity.y != 0 && !isGrounded && !doubleJumped && canDoubleJump && triggerJump && !isOnWall)
+
+        if (rb.velocity.y != 0 && !isGrounded && !doubleJumped && canDoubleJump && triggerJump && !isOnWall)
         {
             isJumping = true;
             doubleJumped = true;
             rb.velocity = new Vector2(rb.velocity.x, 0);
             rb.AddForce(new Vector2(0f, doubleJumpForce), ForceMode2D.Impulse);
         }
-
-
-        //----------------------------------------------------------------------------
-
     }
     private void FixedUpdate()
     {
+
+
         if (isGrounded) doubleJumped = false;
         //movement avec acceleration -------------------------------------------------
         maxSpeed = hInpt * hSpeed;
@@ -119,11 +119,7 @@ public class player_controller : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject other = collision.gameObject;
-        if (other.layer == LayerMask.NameToLayer("Fall"))
-        {
-            rb.velocity = Vector2.zero;
-            transform.position = upStage.position;
-        }
+
         if(other.layer == LayerMask.NameToLayer("Player"))
         {
             Vector2 ejection = collision.GetContact(0).normal;
@@ -131,5 +127,12 @@ public class player_controller : MonoBehaviour
 
             rb.AddForce(ejection* knockback, ForceMode2D.Impulse);
         }
+    }
+
+    public void respawn()
+    {
+        rb.velocity = Vector2.zero;
+        rb.transform.position = respawnPosition;
+        doubleJumped = false;
     }
 }
