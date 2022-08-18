@@ -44,6 +44,7 @@ public class PlayerInputController : MonoBehaviour
     private PlayerFoodInteraction interactor;
     private bool gameStarted;
     private bool isThrowing;
+    private bool oldJumpTrigger;
 
     [SerializeField]
     private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump;
@@ -79,6 +80,7 @@ public class PlayerInputController : MonoBehaviour
         {
             //movement avec acceleration et jump noraml-----------------------------------------
             hInpt = receiver.HorizontalAxis;
+            oldJumpTrigger = triggerJump;
             triggerJump = receiver.Jump;
             fireRight = receiver.FireRight;
             fireLeft = receiver.FireLeft;
@@ -104,7 +106,7 @@ public class PlayerInputController : MonoBehaviour
 
 
         //changement de direction
-        transform.localScale = new Vector3(hInpt!= 0 ? hInpt: transform.localScale.x,  1, 1);
+        transform.localScale = new Vector3(hInpt > 0 ? 1: hInpt < 0 ? -1:  transform.localScale.x,  1, 1);
 
 
 

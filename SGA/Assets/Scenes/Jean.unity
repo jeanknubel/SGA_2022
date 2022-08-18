@@ -1547,6 +1547,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 62124538203591406, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 389245fc72f5b9746a255201fbfdcd1e, type: 2}
     - target: {fileID: 62124538203591407, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
       propertyPath: m_Name
       value: perso_bleu
