@@ -10,6 +10,8 @@ public class PlayerFoodInteraction : MonoBehaviour
     private float massThrownObject, forceThrownObject, gravityThrownObject, throwPowerMultiplier, throwTime;
     [SerializeField]
     private string throwAnimation;
+    [SerializeField]
+    private SoundController soundController;
     private float timer;
     private bool countTime;
     private PlayerInputReceiver receiver;
@@ -36,6 +38,7 @@ public class PlayerFoodInteraction : MonoBehaviour
         {
             if (!holdFood && food == null)
             {
+                soundController.playSound(SoundController.Sound.PRENDRE_ALIMENT);
                 food = other;
                 food.transform.parent = transform;
                 food.transform.localPosition = Vector2.up * 0.75f;
@@ -53,6 +56,8 @@ public class PlayerFoodInteraction : MonoBehaviour
     {
         if(holdFood)
         {
+
+            soundController.playSound(SoundController.Sound.LANCER);
             controller.setThrowing(true);
             GetComponent<PlayerAnimator>().changeAnimation(throwAnimation);
             food.transform.parent = null;
@@ -85,11 +90,12 @@ public class PlayerFoodInteraction : MonoBehaviour
 
     private void FixedUpdate()
     {
+        
         if (countTime)
         {
             timer += Time.deltaTime;
             Vector2 direction = foodRb.velocity.x >= 0 ? Vector2.one : new Vector2(-1, 1);
-            if (receiver.FireLeft || receiver.FireRight) foodRb.AddForce(direction * throwPowerMultiplier, ForceMode2D.Impulse);
+            //if (receiver.FireLeft || receiver.FireRight) foodRb.AddForce(direction * throwPowerMultiplier, ForceMode2D.Impulse);
         }
         if (timer >= throwTime)
         {

@@ -20,4 +20,5 @@ public class PlayerAnimator : MonoBehaviour
             currentAnimationName = animationName;
         }
     }
+
 }
