@@ -11,7 +11,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private List<GameObject> players;
     [SerializeField]
-    private GameObject foodFallManager, SoundController;
+    private GameObject foodFallManager, SoundController, vieuxMan;
 
 
     void Start()
@@ -22,13 +22,9 @@ public class LevelManager : MonoBehaviour
 
     IEnumerator startTimer()
     {
-        yield return new WaitForSeconds(1);
-        print(3);
-        yield return new WaitForSeconds(1);
-        print(2);
-        yield return new WaitForSeconds(1);
-        print(1);
-        yield return new WaitForSeconds(1);
+        vieuxMan.GetComponent<Animator>().Play("VieuxMan_Gong");
+        yield return new WaitForSeconds(2);
+        vieuxMan.SetActive(false);
         launchGame();
         StartCoroutine(GameTimer());
 
@@ -40,7 +36,7 @@ public class LevelManager : MonoBehaviour
         {
             timeRemaining--;
             yield return new WaitForSeconds(1);
-            print("time remaining: " + timeRemaining);
+            //print("time remaining: " + timeRemaining);
         }
     }
 
@@ -51,6 +47,6 @@ public class LevelManager : MonoBehaviour
             player.GetComponent<PlayerInputController>().startGame();
         }
         foodFallManager.GetComponent<FoodFall>().startGame();
-        SoundController.GetComponent<SoundController>().startFight();
+        SoundController.GetComponent<SoundController>().playBackground();
     }
 }

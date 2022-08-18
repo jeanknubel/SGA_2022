@@ -45,6 +45,10 @@ public class PlayerInputController : MonoBehaviour
     private bool gameStarted;
     private bool isThrowing;
     private bool oldJumpTrigger;
+    private bool jumped;
+    private bool hasFallen;
+    [SerializeField]
+    private SoundController soundController;
 
     [SerializeField]
     private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump;
@@ -53,7 +57,9 @@ public class PlayerInputController : MonoBehaviour
     {
         gameStarted = true;
         isThrowing = false;
+        hasFallen = false;
         respawn();
+        jumped = false;
     }
     public void setThrowing(bool value) { isThrowing = value; }
     private void Awake()
@@ -80,7 +86,6 @@ public class PlayerInputController : MonoBehaviour
         {
             //movement avec acceleration et jump noraml-----------------------------------------
             hInpt = receiver.HorizontalAxis;
-            oldJumpTrigger = triggerJump;
             triggerJump = receiver.Jump;
             fireRight = receiver.FireRight;
             fireLeft = receiver.FireLeft;
@@ -90,11 +95,12 @@ public class PlayerInputController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        bool wantJump = triggerJump && !oldJumpTrigger;
         //animation handling
         if (!isThrowing)
         {
             if (isOnWall) animator.changeAnimation(animationWallJump);
-            else if (rb.velocity.x == 0 && isGrounded && hInpt == 0) animator.changeAnimation(animationPending);
+            else if (rb.velocity.x <= 0.0000001 && isGrounded && hInpt == 0) animator.changeAnimation(animationPending);
             else if ((hInpt != 0 || rb.velocity.x != 0) && isGrounded)
             {
                 if (interactor.isHoldingFood()) animator.changeAnimation(animationRunFruit);
@@ -113,8 +119,8 @@ public class PlayerInputController : MonoBehaviour
         isOnToriRight = rb.position.x > 4 && isGrounded;
         isOnToriLeft = rb.position.x < -4 && isGrounded;
 
-        isGrounded = Physics2D.OverlapBox(ground_check.position, new Vector2(0.4f, 0.15f), 0, groundLayer);
-        isOnWall = !isGrounded && Physics2D.OverlapBox(rb.transform.position, new Vector2(0.5f, 0.2f), 0, LayerMask.GetMask("Ground")) ;
+        isGrounded = Physics2D.OverlapBox(ground_check.position, new Vector2(0.4f, 0.3f), 0, groundLayer);
+        isOnWall = !isGrounded && Physics2D.OverlapBox(rb.transform.position, new Vector2(0.5f, 0.2f), 0, LayerMask.GetMask("Wall")) ;
 
         if (isGrounded)
         {
@@ -125,11 +131,8 @@ public class PlayerInputController : MonoBehaviour
         maxSpeed = hInpt * hSpeed;
         speedDif = maxSpeed - rb.velocity.x;
         accelRate = Mathf.Abs(maxSpeed) > 0.01f ? accel : deccel;
-        if (!isOnWall)
-        {
-            float velPow = isGrounded ? velPowGround : velPowAir;
-            rb.AddForce(Mathf.Pow(Mathf.Abs(speedDif) * accelRate, velPow) * Mathf.Sign(speedDif) * Vector2.right);
-        }
+        float velPow = isGrounded ? velPowGround : velPowAir;
+        rb.AddForce(Mathf.Pow(Mathf.Abs(speedDif) * accelRate, velPow) * Mathf.Sign(speedDif) * Vector2.right);
         //----------------------------------------------------------------------------
 
         if (rb.velocity.y != 0 && !triggerJump) releasedJump = true;
@@ -144,10 +147,14 @@ public class PlayerInputController : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, 0);
         //friction sur les murs
         if (isOnWall && rb.velocity.y < 0)
-            //rb.AddForce(Vector2.up * wallFriction);
+            rb.AddForce(Vector2.up * wallFriction * Time.deltaTime);
+
         //wall jump si on appuie dans la direction opposée de ou on vient
         if (isOnWall && hInpt == -playerDirection)
+        {
+            soundController.playSound(SoundController.Sound.JUMP);
             rb.AddForce(new Vector2(wallJumpForce.x * Mathf.Sign(hInpt), wallJumpForce.y), ForceMode2D.Impulse);
+        }
 
         //permet de sauter plus ou moins haut selon comment on appuie sur le bouton
         if (rb.velocity.y > 0 && !triggerJump && isJumping)
@@ -158,10 +165,13 @@ public class PlayerInputController : MonoBehaviour
         else rb.gravityScale = gravityScale;
 
         //saut normal
-        if (triggerJump && isGrounded)
+        if (triggerJump && isGrounded && !isJumping)
         {
+            jumped = true;
+            Invoke("resetJump", 0.5f);
             isJumping = true;
             rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+            soundController.playSound(SoundController.Sound.JUMP);
         }
 
         //double jump
@@ -171,6 +181,8 @@ public class PlayerInputController : MonoBehaviour
             doubleJumped = true;
             rb.velocity = new Vector2(rb.velocity.x, 0);
             rb.AddForce(new Vector2(0f, doubleJumpForce), ForceMode2D.Impulse);
+            soundController.playSound(SoundController.Sound.JUMP);
+
         }
 
         if (fireRight && !isOnToriLeft)
@@ -179,10 +191,28 @@ public class PlayerInputController : MonoBehaviour
             if (aimDirection == Vector2.zero)
                 direction = aimDirection;
             GetComponent<PlayerFoodInteraction>().throwFood(aimDirection, false);
+
         }
-        if(fireLeft && !isOnToriRight) GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y), false);
-        if((fireRight || fireLeft) && isOnToriLeft){   GetComponent<PlayerFoodInteraction>().throwFood(autoAimDirection, true);  }
-        if((fireRight || fireLeft) && isOnToriRight) { GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-autoAimDirection.x, autoAimDirection.y), true);  }
+        if (fireLeft && !isOnToriRight)
+        {
+            GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y), false);
+
+        }
+        if ((fireRight || fireLeft) && isOnToriLeft){
+            transform.localScale = new Vector3(1, 1, 1);
+            GetComponent<PlayerFoodInteraction>().throwFood(autoAimDirection, true);
+
+        }
+        if ((fireRight || fireLeft) && isOnToriRight) {
+            GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-autoAimDirection.x, autoAimDirection.y), true);
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        if (gameObject.transform.position.y <= -4.2 && !hasFallen)
+        {
+            soundController.playSound(SoundController.Sound.CHUTE);
+            hasFallen = true;
+        }
+
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -203,5 +233,18 @@ public class PlayerInputController : MonoBehaviour
         rb.transform.position = respawnPosition;
         GetComponent<PlayerFoodInteraction>().looseFood();
         doubleJumped = false;
+        hasFallen = false;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireCube(ground_check.position, new Vector2(0.4f, 0.3f));
+    }
+
+    private void resetJump()
+    {
+        jumped = false;
     }
 }

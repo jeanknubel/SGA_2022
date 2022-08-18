@@ -39,7 +39,6 @@ public class PlayerInputSender : MonoBehaviour
     private void OnMove(InputValue value)
     {
         playerInputReceiver.HorizontalAxis = value.Get<float>();
-        print(playerInputReceiver.HorizontalAxis);
     }
     private void OnJump(InputValue value)
     {
