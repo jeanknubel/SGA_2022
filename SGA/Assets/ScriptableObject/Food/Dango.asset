@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46008825fae8cca48aa047efa1f34c95, type: 3}
   m_Name: Dango
   m_EditorClassIdentifier: 
-  score: 0
+  score: 1
   sprite: {fileID: 21300000, guid: fed73d3ae10ab7f4e99e958d0bdb1138, type: 3}
   rarity: 1

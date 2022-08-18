@@ -20,7 +20,7 @@ public class PlayerInputController : MonoBehaviour
     private Vector2 respawnPosition;
 
     [SerializeField]
-    private Vector2 aimDirection;
+    private Vector2 aimDirection, autoAimDirection;
 
 
     [SerializeField]
@@ -39,17 +39,34 @@ public class PlayerInputController : MonoBehaviour
     private float playerDirection;
     private bool doubleJumped, releasedJump;
     private PlayerInputReceiver receiver;
-    private bool fireRight, fireLeft, isOnTori;
-    
+    private bool fireRight, fireLeft, isOnToriLeft, isOnToriRight;
+    private PlayerAnimator animator;
+    private PlayerFoodInteraction interactor;
+    private bool gameStarted;
+    private bool isThrowing;
+
+    [SerializeField]
+    private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump;
+
+    public void startGame()
+    {
+        gameStarted = true;
+        isThrowing = false;
+        respawn();
+    }
+    public void setThrowing(bool value) { isThrowing = value; }
     private void Awake()
     {
         receiver = GetComponent<PlayerInputReceiver>();
         print(receiver);
+        gameStarted = false;
     }
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<PlayerAnimator>();
+        interactor = GetComponent<PlayerFoodInteraction>();
         groundLayer = LayerMask.GetMask("Ground", "Food");
         playerDirection = 1;
         doubleJumped = false;
@@ -58,21 +75,44 @@ public class PlayerInputController : MonoBehaviour
 
     void Update()
     {
-        //movement avec acceleration et jump noraml-----------------------------------------
-        hInpt = receiver.HorizontalAxis;
-        triggerJump = receiver.Jump;
-        fireRight = receiver.FireRight;
-        fireLeft = receiver.FireLeft;
-        //----------------------------------------------------------------------------
-
-        //print(receiver.Jump);
+        if (gameStarted)
+        {
+            //movement avec acceleration et jump noraml-----------------------------------------
+            hInpt = receiver.HorizontalAxis;
+            triggerJump = receiver.Jump;
+            fireRight = receiver.FireRight;
+            fireLeft = receiver.FireLeft;
+            //----------------------------------------------------------------------------
+        }
 
     }
     private void FixedUpdate()
     {
-        isOnTori = Mathf.Abs(rb.position.x) > 4 && isGrounded;
-        isGrounded = Physics2D.OverlapBox(ground_check.position, new Vector2(0.2f, 0.2f), 0, groundLayer);
-        isOnWall = Physics2D.OverlapBox(rb.transform.position, new Vector2(0.5f, 0.2f), 0, LayerMask.GetMask("Wall"));
+        //animation handling
+        if (!isThrowing)
+        {
+            if (isOnWall) animator.changeAnimation(animationWallJump);
+            else if (rb.velocity.x == 0 && isGrounded && hInpt == 0) animator.changeAnimation(animationPending);
+            else if ((hInpt != 0 || rb.velocity.x != 0) && isGrounded)
+            {
+                if (interactor.isHoldingFood()) animator.changeAnimation(animationRunFruit);
+                else animator.changeAnimation(animationRun);
+            }
+            else if (!isGrounded && rb.velocity.y < 0) animator.changeAnimation(animationFall);
+            else if (!isGrounded && rb.velocity.y > 0) animator.changeAnimation(animationJump);
+        }
+
+
+        //changement de direction
+        transform.localScale = new Vector3(hInpt!= 0 ? hInpt: transform.localScale.x,  1, 1);
+
+
+
+        isOnToriRight = rb.position.x > 4 && isGrounded;
+        isOnToriLeft = rb.position.x < -4 && isGrounded;
+
+        isGrounded = Physics2D.OverlapBox(ground_check.position, new Vector2(0.4f, 0.15f), 0, groundLayer);
+        isOnWall = !isGrounded && Physics2D.OverlapBox(rb.transform.position, new Vector2(0.5f, 0.2f), 0, LayerMask.GetMask("Ground")) ;
 
         if (isGrounded)
         {
@@ -102,7 +142,7 @@ public class PlayerInputController : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, 0);
         //friction sur les murs
         if (isOnWall && rb.velocity.y < 0)
-            rb.AddForce(Vector2.up * wallFriction);
+            //rb.AddForce(Vector2.up * wallFriction);
         //wall jump si on appuie dans la direction opposée de ou on vient
         if (isOnWall && hInpt == -playerDirection)
             rb.AddForce(new Vector2(wallJumpForce.x * Mathf.Sign(hInpt), wallJumpForce.y), ForceMode2D.Impulse);
@@ -131,14 +171,16 @@ public class PlayerInputController : MonoBehaviour
             rb.AddForce(new Vector2(0f, doubleJumpForce), ForceMode2D.Impulse);
         }
 
-        if (fireRight && !isOnTori)
+        if (fireRight && !isOnToriLeft)
         {
             Vector2 direction = receiver.Aim;
             if (aimDirection == Vector2.zero)
                 direction = aimDirection;
-            GetComponent<PlayerFoodInteraction>().throwFood(aimDirection);
+            GetComponent<PlayerFoodInteraction>().throwFood(aimDirection, false);
         }
-        if(fireLeft) GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y));
+        if(fireLeft && !isOnToriRight) GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y), false);
+        if((fireRight || fireLeft) && isOnToriLeft){   GetComponent<PlayerFoodInteraction>().throwFood(autoAimDirection, true);  }
+        if((fireRight || fireLeft) && isOnToriRight) { GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-autoAimDirection.x, autoAimDirection.y), true);  }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
