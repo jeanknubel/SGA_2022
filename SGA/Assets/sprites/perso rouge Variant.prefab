@@ -79,5 +79,41 @@ PrefabInstance:
       propertyPath: respawnPosition.x
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: upStage
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: animationRun
+      value: PersoRouge_Run
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: animationFall
+      value: PersoRouge_Fall
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: animationJump
+      value: PersoRouge_Jump
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: animationThrow
+      value: PersoRouge_Throw
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: animationPending
+      value: PersoRouge_Pending
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: animationRunFruit
+      value: PersoRouge_RunFruit
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: animationWallJump
+      value: PersoRouge_WallJump
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: respawnPosition.x
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}

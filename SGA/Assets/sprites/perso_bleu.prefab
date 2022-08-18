@@ -212,9 +212,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cee3a8ffee548a4cabed40845791fb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  massThrownObject: 0
-  forceThrownObject: 0
-  gravityThrownObject: 0
+  massThrownObject: 5
+  forceThrownObject: 20
+  gravityThrownObject: 2
+  throwPowerMultiplier: 3
+  throwTime: 0.2
+  throwAnimation: PersoBleu_Throw
 --- !u!114 &2341556506869416113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,6 +245,14 @@ MonoBehaviour:
   wallJumpForce: {x: 10, y: 10}
   respawnPosition: {x: -5, y: 2}
   aimDirection: {x: 1, y: 1}
+  autoAimDirection: {x: 2, y: -1}
   upStage: {fileID: 0}
   canDoubleJump: 1
   doubleJumpForce: 7
+  animationPending: PersoBleu_Pending
+  animationFall: PersoBleu_Fall
+  animationJump: PersoBleu_Jump
+  animationRun: PersoBleu_Run
+  animationRunFruit: PersoBleu_RunFruit
+  animationThrow: PersoBleu_Throw
+  animationWallJump: PersoBleu_WallJump

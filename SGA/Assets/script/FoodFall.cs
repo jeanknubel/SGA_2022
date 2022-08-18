@@ -23,16 +23,17 @@ public class FoodFall : MonoBehaviour
     private float totTresh = 0;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         foreach (FoodStats foodStat in foodTypes)
         {
             totTresh += foodStat.getRarity();
             tresh.Add(totTresh);
-        }
-            
+        }       
+    }
+    public void startGame()
+    {
         StartCoroutine(foodSpawnCoroutine());
-
     }
 
     IEnumerator foodSpawnCoroutine()
@@ -63,5 +64,7 @@ public class FoodFall : MonoBehaviour
         food.layer = LayerMask.NameToLayer("Food");
         food.GetComponent<SpriteRenderer>().sprite = foodTypes[elementIdx].getSprite();
         food.GetComponent<Rigidbody2D>().gravityScale = 0.3f;
+        food.AddComponent<FoodData>();
+        food.GetComponent<FoodData>().setStats(foodTypes[elementIdx]);
     }
 }
