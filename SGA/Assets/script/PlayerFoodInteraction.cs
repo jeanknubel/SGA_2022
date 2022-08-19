@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerFoodInteraction : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class PlayerFoodInteraction : MonoBehaviour
     private string throwAnimation;
     [SerializeField]
     private SoundController soundController;
+    [SerializeField]
+    private TextMeshProUGUI scoreTxt;
+
     private float timer;
     private bool countTime;
     private PlayerInputReceiver receiver;
@@ -30,6 +34,7 @@ public class PlayerFoodInteraction : MonoBehaviour
         receiver = GetComponent<PlayerInputReceiver>();
         controller = GetComponent<PlayerInputController>();
         score = 0;
+        scoreTxt.text = "0";
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -68,10 +73,10 @@ public class PlayerFoodInteraction : MonoBehaviour
 
             if (forKing)
             {
+                food.GetComponent<FoodData>().setOwner(gameObject);
                 food.layer = LayerMask.NameToLayer("FoodForKing");
                 food.GetComponent<Rigidbody2D>().gravityScale = 0;
-                score += food.GetComponent<FoodData>().getScore();
-                print(score);
+ 
             }
             else
             {
@@ -86,6 +91,11 @@ public class PlayerFoodInteraction : MonoBehaviour
         Destroy(food);
         food = null;
         holdFood = false;
+    }
+    public void addScore(int amount)
+    {
+        score += amount;
+        scoreTxt.text = score.ToString();
     }
 
     private void FixedUpdate()

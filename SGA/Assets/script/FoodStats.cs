@@ -9,12 +9,13 @@ public class FoodStats : ScriptableObject
     private int score;
 
     [SerializeField]
-    private Sprite sprite;
+    private Sprite sprite, spriteBlanc;
 
     [SerializeField]
     private int rarity;
 
     public int getScore() { return score; }
     public Sprite getSprite() { return sprite; }
+    public Sprite getSpriteGlow() { return spriteBlanc; }
     public int getRarity() { return rarity; }
 }

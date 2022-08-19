@@ -5,7 +5,7 @@ using UnityEngine;
 public class SoundController : MonoBehaviour
 {
     [SerializeField]
-    private AudioClip background;
+    private AudioClip background, vieuxGong;
     [SerializeField]
     private List<AudioClip> darumaGrognement, chute, empereurColere, empereurGrognement, empereurMange, jump, lancer, prendreAliment, victory;
     private List<List<AudioClip>> clips;
@@ -43,6 +43,11 @@ public class SoundController : MonoBehaviour
         sourceBackGround.clip = background;
         sourceBackGround.loop = true;
         sourceBackGround.Play();
+    }
+    public void startGame()
+    {
+        sourceEffects.clip = vieuxGong;
+        sourceEffects.Play();
     }
 
 }

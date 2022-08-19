@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46008825fae8cca48aa047efa1f34c95, type: 3}
   m_Name: Sushi
   m_EditorClassIdentifier: 
-  score: 1
+  score: 2
   sprite: {fileID: 21300000, guid: 8788847ea607a45438a76b00f0e86146, type: 3}
-  rarity: 1
+  spriteBlanc: {fileID: 21300000, guid: 63a25d680651e434cb692e536aaeb3de, type: 3}
+  rarity: 4

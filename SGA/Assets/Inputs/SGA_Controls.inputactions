@@ -164,6 +164,28 @@
                 },
                 {
                     "name": "",
+                    "id": "185e0c3d-620e-4e5f-8519-e970d57e39e3",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d31b109d-d25a-4ac4-ad9b-b8dd253ffeb4",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "71d5c320-1003-4c85-8bc4-acbd6d150473",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",

@@ -17,6 +17,8 @@ public class KingEat : MonoBehaviour
         GameObject other = collision.gameObject;
         if (other.layer == LayerMask.NameToLayer("FoodForKing"))
         {
+            FoodData data = other.GetComponent<FoodData>();
+            data.getOwner().GetComponent<PlayerFoodInteraction>().addScore(data.getScore());
             Destroy(other);
             animator.changeAnimation("King_Eat");
             soundController.playSound(SoundController.Sound.EMPEREUR_MANGE);

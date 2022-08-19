@@ -30,7 +30,10 @@ public class PlayerInputController : MonoBehaviour
     private bool canDoubleJump;
     [SerializeField]
     private float doubleJumpForce;
+    [SerializeField]
+    private float forceBuild;
 
+    private Vector2 throwVector;
     private float hInpt;
     private float maxSpeed, speedDif, accelRate;
     private bool triggerJump, isGrounded, isOnWall, isJumping;
@@ -39,7 +42,7 @@ public class PlayerInputController : MonoBehaviour
     private float playerDirection;
     private bool doubleJumped, releasedJump;
     private PlayerInputReceiver receiver;
-    private bool fireRight, fireLeft, isOnToriLeft, isOnToriRight;
+    private bool fireRight, fireLeft, isOnToriLeft, isOnToriRight, lastFireRight, lastFireLeft;
     private PlayerAnimator animator;
     private PlayerFoodInteraction interactor;
     private bool gameStarted;
@@ -51,7 +54,7 @@ public class PlayerInputController : MonoBehaviour
     private SoundController soundController;
 
     [SerializeField]
-    private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump;
+    private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump, animationPendingFood, animationJumpFront;
 
     public void startGame()
     {
@@ -67,11 +70,12 @@ public class PlayerInputController : MonoBehaviour
         receiver = GetComponent<PlayerInputReceiver>();
         print(receiver);
         gameStarted = false;
+        rb = GetComponent<Rigidbody2D>();
+
     }
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<PlayerAnimator>();
         interactor = GetComponent<PlayerFoodInteraction>();
         groundLayer = LayerMask.GetMask("Ground", "Food");
@@ -87,6 +91,8 @@ public class PlayerInputController : MonoBehaviour
             //movement avec acceleration et jump noraml-----------------------------------------
             hInpt = receiver.HorizontalAxis;
             triggerJump = receiver.Jump;
+            lastFireRight = fireRight;
+            lastFireLeft = fireLeft;
             fireRight = receiver.FireRight;
             fireLeft = receiver.FireLeft;
             //----------------------------------------------------------------------------
@@ -100,13 +106,18 @@ public class PlayerInputController : MonoBehaviour
         if (!isThrowing)
         {
             if (isOnWall) animator.changeAnimation(animationWallJump);
-            else if (rb.velocity.x <= 0.0000001 && isGrounded && hInpt == 0) animator.changeAnimation(animationPending);
+            else if (rb.velocity.x == 0 && isGrounded && hInpt == 0)
+            {
+                if (interactor.isHoldingFood()) animator.changeAnimation(animationPendingFood);
+                else animator.changeAnimation(animationPending);
+            }
             else if ((hInpt != 0 || rb.velocity.x != 0) && isGrounded)
             {
                 if (interactor.isHoldingFood()) animator.changeAnimation(animationRunFruit);
                 else animator.changeAnimation(animationRun);
             }
-            else if (!isGrounded && rb.velocity.y < 0) animator.changeAnimation(animationFall);
+            else if (!isGrounded && rb.velocity.y < 0 && rb.velocity.x != 0) animator.changeAnimation(animationFall);
+            else if (!isGrounded && rb.velocity.y != 0 && rb.velocity.x == 0 && hInpt == 0) animator.changeAnimation(animationJumpFront);
             else if (!isGrounded && rb.velocity.y > 0) animator.changeAnimation(animationJump);
         }
 
@@ -119,8 +130,8 @@ public class PlayerInputController : MonoBehaviour
         isOnToriRight = rb.position.x > 4 && isGrounded;
         isOnToriLeft = rb.position.x < -4 && isGrounded;
 
-        isGrounded = Physics2D.OverlapBox(ground_check.position, new Vector2(0.4f, 0.3f), 0, groundLayer);
-        isOnWall = !isGrounded && Physics2D.OverlapBox(rb.transform.position, new Vector2(0.5f, 0.2f), 0, LayerMask.GetMask("Wall")) ;
+        isGrounded = Physics2D.OverlapBox(ground_check.position, new Vector2(0.4f, 0.5f), 0, groundLayer);
+        isOnWall = !isGrounded && Physics2D.OverlapBox(rb.transform.position, new Vector2(0.94f, 0.2f), 0, LayerMask.GetMask("Wall")) ;
 
         if (isGrounded)
         {
@@ -185,12 +196,14 @@ public class PlayerInputController : MonoBehaviour
 
         }
 
-        if (fireRight && !isOnToriLeft)
+
+
+        if (fireRight && !lastFireRight && !isOnToriLeft)
         {
-            Vector2 direction = receiver.Aim;
-            if (aimDirection == Vector2.zero)
-                direction = aimDirection;
-            GetComponent<PlayerFoodInteraction>().throwFood(aimDirection, false);
+            throwVector = receiver.Aim;
+            if (throwVector == Vector2.zero)
+                throwVector = aimDirection;
+            //GetComponent<PlayerFoodInteraction>().throwFood(aimDirection, false);
 
         }
         if (fireLeft && !isOnToriRight)
@@ -240,7 +253,8 @@ public class PlayerInputController : MonoBehaviour
     {
         Gizmos.color = Color.red;
 
-        Gizmos.DrawWireCube(ground_check.position, new Vector2(0.4f, 0.3f));
+        Gizmos.DrawWireCube(ground_check.position, new Vector2(0.4f, 0.5f));
+        Gizmos.DrawWireCube(transform.position, new Vector2(0.94f, 0.2f));
     }
 
     private void resetJump()

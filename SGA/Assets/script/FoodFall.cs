@@ -59,12 +59,19 @@ public class FoodFall : MonoBehaviour
             elementIdx++;
         }
 
+        FoodStats foodType = foodTypes[elementIdx];
+
         Vector2 position = new Vector2(Random.Range(-foodSpawnRadius, foodSpawnRadius), up.position.y);
         GameObject food = Instantiate(foodPrefab, position, Quaternion.identity);
         food.layer = LayerMask.NameToLayer("Food");
-        food.GetComponent<SpriteRenderer>().sprite = foodTypes[elementIdx].getSprite();
+        food.GetComponent<SpriteRenderer>().sprite = foodType.getSprite();
         food.GetComponent<Rigidbody2D>().gravityScale = 0.3f;
         food.AddComponent<FoodData>();
-        food.GetComponent<FoodData>().setStats(foodTypes[elementIdx]);
+        food.GetComponent<FoodData>().setStats(foodType);
+        SpriteRenderer glowing = food.GetComponentsInChildren<SpriteRenderer>()[1];
+        glowing.sprite = foodType.getSpriteGlow();
+        glowing.color = new Color(1, 0.92f, 0.016f, foodType.getScore() == 5 ? 1 : foodType.getScore() > 1 ? 0.4f : 0);
+        if (foodType.getScore() == 5) glowing.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+
     }
 }

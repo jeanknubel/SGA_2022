@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: 1
   sprite: {fileID: 21300000, guid: f74e71b4c726a1b43b2dbadb05af1b58, type: 3}
-  rarity: 1
+  spriteBlanc: {fileID: 21300000, guid: 84652023fd235404ca7fdbb29ad775c4, type: 3}
+  rarity: 5
