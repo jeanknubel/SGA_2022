@@ -754,6 +754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 8300000, guid: 91f7d8b7436ef8641ab5505bdd29f531, type: 3}
+  vieuxGong: {fileID: 0}
   darumaGrognement:
   - {fileID: 8300000, guid: d901f012ebb3cc04c926c8acaccd67b2, type: 3}
   - {fileID: 8300000, guid: 308ef76fd6ecd7043ae9aa84c730fecf, type: 3}
@@ -920,7 +921,7 @@ MonoBehaviour:
   foodSpawnRadius: 5
   spawnRate: 0.5
   gravityScale: 0.2
-  foodPrefab: {fileID: 2448037220626064581, guid: 7a722f6f94927bd468bf9db074ecf216, type: 3}
+  foodPrefab: {fileID: 3636934402312109981, guid: 7a722f6f94927bd468bf9db074ecf216, type: 3}
   foodTypes:
   - {fileID: 11400000, guid: 4a44a5110e3558b4c893b2652a158503, type: 2}
   - {fileID: 11400000, guid: 50f26d6e0ed980b4383aa52c3eaa45f1, type: 2}
@@ -1144,6 +1145,8 @@ MonoBehaviour:
   foodFallManager: {fileID: 1036794985}
   SoundController: {fileID: 772046549}
   vieuxMan: {fileID: 1369159571}
+  timerTxt: {fileID: 0}
+  vieuxManSoundDelay: 0
 --- !u!4 &1346741301
 Transform:
   m_ObjectHideFlags: 0
@@ -2148,7 +2151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4031627945281827794, guid: 8a1ced31f9551674eaa6a02df4b0e7e3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4031627945281827791, guid: 8a1ced31f9551674eaa6a02df4b0e7e3, type: 3}
