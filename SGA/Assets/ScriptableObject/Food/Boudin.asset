@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46008825fae8cca48aa047efa1f34c95, type: 3}
   m_Name: Boudin
   m_EditorClassIdentifier: 
-  score: 0
-  sprite: {fileID: 0}
+  score: -3
+  sprite: {fileID: 21300000, guid: 392ec1ad5535b834bafc5c3a141cf67b, type: 3}
   spriteBlanc: {fileID: 0}
-  rarity: 0
+  rarity: 3

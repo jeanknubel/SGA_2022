@@ -52,6 +52,7 @@ public class PlayerInputController : MonoBehaviour
     private bool hasFallen;
     [SerializeField]
     private SoundController soundController;
+    private float initialTrowForce, trrowFore;
 
     [SerializeField]
     private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump, animationPendingFood, animationJumpFront;
@@ -122,6 +123,13 @@ public class PlayerInputController : MonoBehaviour
         }
 
 
+        //wall jump si on appuie dans la direction opposée de ou on vient
+        if (isOnWall && hInpt > 0 && Mathf.Abs(rb.velocity.x) <= 0.00000001)
+        {
+            soundController.playSound(SoundController.Sound.JUMP);
+            rb.AddForce(new Vector2(wallJumpForce.x * -playerDirection, wallJumpForce.y), ForceMode2D.Impulse);
+        }
+
         //changement de direction
         transform.localScale = new Vector3(hInpt > 0 ? 1: hInpt < 0 ? -1:  transform.localScale.x,  1, 1);
 
@@ -131,7 +139,7 @@ public class PlayerInputController : MonoBehaviour
         isOnToriLeft = rb.position.x < -4 && isGrounded;
 
         isGrounded = Physics2D.OverlapBox(ground_check.position, new Vector2(0.4f, 0.5f), 0, groundLayer);
-        isOnWall = !isGrounded && Physics2D.OverlapBox(rb.transform.position, new Vector2(0.94f, 0.2f), 0, LayerMask.GetMask("Wall")) ;
+        isOnWall = !isGrounded && Physics2D.OverlapBox(rb.transform.position, new Vector2(1.1f, 0.2f), 0, LayerMask.GetMask("Wall")) ;
 
         if (isGrounded)
         {
@@ -154,18 +162,11 @@ public class PlayerInputController : MonoBehaviour
         playerDirection = rb.velocity.x > 0 ? 1 : rb.velocity.x < 0 ? -1 : playerDirection;
 
         //reset la vitesse y si on arrive sur le mur pour qu'on glisse tjr à la même vitesse
-        if (isOnWall && rb.velocity.x != 0)
-            rb.velocity = new Vector2(rb.velocity.x, 0);
+        //if (isOnWall && rb.velocity.x != 0)
+          //  rb.velocity = new Vector2(rb.velocity.x, 0);
         //friction sur les murs
         if (isOnWall && rb.velocity.y < 0)
             rb.AddForce(Vector2.up * wallFriction * Time.deltaTime);
-
-        //wall jump si on appuie dans la direction opposée de ou on vient
-        if (isOnWall && hInpt == -playerDirection)
-        {
-            soundController.playSound(SoundController.Sound.JUMP);
-            rb.AddForce(new Vector2(wallJumpForce.x * Mathf.Sign(hInpt), wallJumpForce.y), ForceMode2D.Impulse);
-        }
 
         //permet de sauter plus ou moins haut selon comment on appuie sur le bouton
         if (rb.velocity.y > 0 && !triggerJump && isJumping)
@@ -196,8 +197,6 @@ public class PlayerInputController : MonoBehaviour
 
         }
 
-
-
         if (fireRight && !lastFireRight && !isOnToriLeft)
         {
             throwVector = receiver.Aim;
@@ -206,10 +205,18 @@ public class PlayerInputController : MonoBehaviour
             //GetComponent<PlayerFoodInteraction>().throwFood(aimDirection, false);
 
         }
-        if (fireLeft && !isOnToriRight)
+        if (fireLeft && !isOnToriRight && !lastFireLeft)
         {
-            GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y), false);
+            throwVector = receiver.Aim;
+            if (throwVector == Vector2.zero)
+                throwVector = new Vector2(-aimDirection.x, aimDirection.y);
+            //GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y), false);
 
+        }
+        if((fireLeft && lastFireLeft) || (fireRight && lastFireRight))
+        {
+            initialTrowForce += forceBuild;
+            print(initialTrowForce);
         }
         if ((fireRight || fireLeft) && isOnToriLeft){
             transform.localScale = new Vector3(1, 1, 1);
@@ -254,7 +261,7 @@ public class PlayerInputController : MonoBehaviour
         Gizmos.color = Color.red;
 
         Gizmos.DrawWireCube(ground_check.position, new Vector2(0.4f, 0.5f));
-        Gizmos.DrawWireCube(transform.position, new Vector2(0.94f, 0.2f));
+        Gizmos.DrawWireCube(transform.position, new Vector2(1.1f, 0.2f));
     }
 
     private void resetJump()
