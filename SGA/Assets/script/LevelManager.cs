@@ -24,19 +24,9 @@ public class LevelManager : MonoBehaviour
     {
 
         timeRemaining = 120;
-        StartCoroutine(startTimer());
-        timerTxt.text = timeRemaining.ToString();
-    }
-
-    IEnumerator startTimer()
-    {
-        yield return new WaitForSeconds(vieuxManSoundDelay);
-        SoundController.GetComponent<SoundController>().startGame();
-        yield return new WaitForSeconds(1.6f);
-        vieuxMan.SetActive(false);
         launchGame();
         StartCoroutine(GameTimer());
-
+        timerTxt.text = timeRemaining.ToString();
     }
 
 
@@ -57,7 +47,6 @@ public class LevelManager : MonoBehaviour
             player.GetComponent<PlayerInputController>().startGame();
         }
         foodFallManager.GetComponent<FoodFall>().startGame();
-        SoundController.GetComponent<SoundController>().playBackground();
     }
 
 }

@@ -52,7 +52,9 @@ public class PlayerInputController : MonoBehaviour
     private bool hasFallen;
     [SerializeField]
     private SoundController soundController;
-    private float initialTrowForce, trrowFore;
+    private float throwForce, throwTime ;
+    [SerializeField]
+    private float initialThrowForce, maxThrowTime;
 
     [SerializeField]
     private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump, animationPendingFood, animationJumpFront;
@@ -102,6 +104,7 @@ public class PlayerInputController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        if (fireRight) print("fire");
         bool wantJump = triggerJump && !oldJumpTrigger;
         //animation handling
         if (!isThrowing)
@@ -202,6 +205,7 @@ public class PlayerInputController : MonoBehaviour
             throwVector = receiver.Aim;
             if (throwVector == Vector2.zero)
                 throwVector = aimDirection;
+            throwTime = 0;
             //GetComponent<PlayerFoodInteraction>().throwFood(aimDirection, false);
 
         }
@@ -211,12 +215,18 @@ public class PlayerInputController : MonoBehaviour
             if (throwVector == Vector2.zero)
                 throwVector = new Vector2(-aimDirection.x, aimDirection.y);
             //GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y), false);
+            throwTime = 0;
 
         }
-        if((fireLeft && lastFireLeft) || (fireRight && lastFireRight))
+        if (((fireLeft && lastFireLeft) || (fireRight && lastFireRight)) && throwTime <= maxThrowTime)
         {
-            initialTrowForce += forceBuild;
-            print(initialTrowForce);
+            throwForce += forceBuild;
+            throwTime += Time.deltaTime;
+            print(throwForce);
+        }
+        if(!fireRight && lastFireRight)
+        {
+            print("fire");
         }
         if ((fireRight || fireLeft) && isOnToriLeft){
             transform.localScale = new Vector3(1, 1, 1);

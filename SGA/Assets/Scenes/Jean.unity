@@ -2787,8 +2787,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1927771304}
     - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: forceBuild
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
       propertyPath: throwForce
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: maxThrowTime
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
       propertyPath: wallFriction
@@ -2799,6 +2807,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 772046551}
     - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
+      propertyPath: initialThrowForce
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
       propertyPath: respawnPosition.y
       value: 5
       objectReference: {fileID: 0}
@@ -2808,7 +2820,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2341556506869416113, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
       propertyPath: animationPendingFood
-      value: PersoBleu_PendingFood
+      value: PersoBleu_PendingFruit
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 62124538203591410, guid: cb5faf0a70df5d34da978749ea19d7e8, type: 3}
@@ -2841,7 +2853,7 @@ Animator:
   m_GameObject: {fileID: 1919277200}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 761f4a8002e732c4ebb5af30c73d772b, type: 2}
+  m_Controller: {fileID: 9100000, guid: 9e257597e0ff8d64c8f4ca33c2f5b1aa, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

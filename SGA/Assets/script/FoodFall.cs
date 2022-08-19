@@ -19,6 +19,9 @@ public class FoodFall : MonoBehaviour
     [SerializeField]
     private List<FoodStats> foodTypes;
 
+    [SerializeField]
+    private GameObject particleSystemPrefab;
+
     private List<float> tresh = new List<float>();
     private float totTresh = 0;
 
@@ -68,10 +71,24 @@ public class FoodFall : MonoBehaviour
         food.GetComponent<Rigidbody2D>().gravityScale = 0.3f;
         food.AddComponent<FoodData>();
         food.GetComponent<FoodData>().setStats(foodType);
-        SpriteRenderer glowing = food.GetComponentsInChildren<SpriteRenderer>()[1];
-        glowing.sprite = foodType.getSpriteGlow();
-        glowing.color = new Color(1, 0.92f, 0.016f, foodType.getScore() == 5 ? 1 : foodType.getScore() > 1 ? 0.4f : 0);
-        if (foodType.getScore() == 5) glowing.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+
+        if (foodType.getScore() < 0)
+        {
+            GameObject particlePrefab = Instantiate(particleSystemPrefab, food.transform);
+            food.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            food.transform.GetChild(0).gameObject.AddComponent<SineWaveRenderer>();
+            food.transform.GetChild(0).gameObject.GetComponent<SineWaveRenderer>().GlowColor = Color.yellow;
+            food.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = foodTypes[elementIdx].getSpriteGlow();
+        }
+
+
+        //SpriteRenderer glowing = food.GetComponentsInChildren<SpriteRenderer>()[1];
+        //glowing.sprite = foodType.getSpriteGlow();
+        //glowing.color = new Color(1, 0.92f, 0.016f, foodType.getScore() == 5 ? 1 : foodType.getScore() > 1 ? 0.4f : 0);
+        //if (foodType.getScore() == 5) glowing.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
 
     }
 }
