@@ -1296,6 +1296,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 47acb3427dde1bd48a7e01ca76e29e19, type: 2}
   - {fileID: 11400000, guid: f45665db17179a24b9d8e4470931d611, type: 2}
   - {fileID: 11400000, guid: 646444e8c7b36d74ba136613cf2fc41b, type: 2}
+  particleSystemPrefab: {fileID: 2883912279689100409, guid: 0768fa09fcacfed4a8e30b186d377cc4, type: 3}
 --- !u!4 &1036794987
 Transform:
   m_ObjectHideFlags: 0
