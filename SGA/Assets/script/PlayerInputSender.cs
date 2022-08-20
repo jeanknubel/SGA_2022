@@ -56,4 +56,13 @@ public class PlayerInputSender : MonoBehaviour
     {
         playerInputReceiver.Aim = value.Get<Vector2>();
     }
+    private void OnPause(InputValue value)
+    {
+        playerInputReceiver.Pause = value.Get<float>() > 0.5f;
+    }
+    private void OnSkip(InputValue value)
+    {
+        playerInputReceiver.Skip = value.Get<float>() > 0.5f;
+
+    }
 }

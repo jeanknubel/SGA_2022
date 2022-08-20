@@ -17,4 +17,13 @@ public class FoodData : MonoBehaviour
     }
     public void setOwner(GameObject owner) { this.owner = owner; }
     public GameObject getOwner() { return owner; }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        GameObject other = collision.gameObject;
+        if (gameObject.layer == LayerMask.NameToLayer("ThrownFood") && other.layer != LayerMask.NameToLayer("Player"))
+        {
+            gameObject.layer = LayerMask.NameToLayer("Food");
+        }
+    }
 }

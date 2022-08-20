@@ -12,6 +12,9 @@ public class PlayerInputReceiver : MonoBehaviour
     public bool FireRight { get; set; }
     public bool FireLeft { get; set; }
     public Vector2 Aim { get; set; }
+    public bool Pause { get; set; }
+    public bool Skip { get; set; }
 
     public int PlayerIndex => playerIdx;
+
 }
