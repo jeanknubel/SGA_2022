@@ -63,8 +63,8 @@ public class SoundController : MonoBehaviour
     }
     public void startGame()
     {
-        sourceEffects.clip = vieuxGong;
-        sourceEffects.Play();
+        sourceFx.clip = vieuxGong;
+        sourceFx.Play();
     }
 
 }

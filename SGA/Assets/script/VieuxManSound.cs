@@ -14,4 +14,8 @@ public class VieuxManSound : MonoBehaviour
     {
         soundController.playBackground();
     }
+    public void desactivate()
+    {
+        gameObject.SetActive(false);
+    }
 }

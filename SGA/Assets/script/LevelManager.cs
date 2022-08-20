@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class LevelManager : MonoBehaviour
 {
@@ -28,20 +29,39 @@ public class LevelManager : MonoBehaviour
     private GameObject feu;
     [SerializeField]
     private SoundController soundController;
+    [SerializeField]
+    private GameObject pauseMenu;
+    [SerializeField]
+    private VideoPlayer videoDebut;
+    [SerializeField]
+    private GameObject videoRenderer;
+    [SerializeField]
     private Queue<Image> roundMarkBleuQueue, roundMarkRougeQueue;
+    [SerializeField]
+    private GameObject darumaSelect;
+    private bool videoPlaying;
 
     void Start()
     {
+        darumaSelect.SetActive(false);
+        videoDebut.Play();
+        videoPlaying = true;
         roundMarkBleuQueue = new Queue<Image>();
         roundMarkRougeQueue = new Queue<Image>();
         foreach (Image o in roundMarkBleu) roundMarkBleuQueue.Enqueue(o);
         foreach (Image o in roundMarkRouge) roundMarkRougeQueue.Enqueue(o);
-
-        launchGame();
-        timerTxt.text = timeRemaining.ToString();
- 
     }
 
+    private void selectDaruma()
+    {
+        videoRenderer.SetActive(false);
+        darumaSelect.SetActive(true);
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<PlayerInputController>().selectDaruma();
+        }
+
+    }
 
     IEnumerator GameTimer()
     {
@@ -69,6 +89,8 @@ public class LevelManager : MonoBehaviour
         }
         foodFallManager.GetComponent<FoodFall>().stopGame();
         StartCoroutine(fadeToBlack());
+        Invoke("markWinner", 2);
+
     }
 
     IEnumerator fadeToBlack()
@@ -80,8 +102,6 @@ public class LevelManager : MonoBehaviour
             fondNoir.color = color;
             yield return new WaitForSeconds(0.05f);
         }
-        yield return new WaitForSeconds(1.5f);
-        markWinner();
     }
     private void markWinner()
     {
@@ -111,7 +131,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            Invoke("launchGame", 1.5f);
+            Invoke("launchGame", 2f);
         }
     }
     IEnumerator fadeFromBlack()
@@ -127,14 +147,44 @@ public class LevelManager : MonoBehaviour
         print(fondNoir.color.a);
 
     }
-    private void launchGame()
+    public void pauseGame()
     {
+        StartCoroutine(fadeToBlack());
+        pauseMenu.SetActive(true);
+
+    }
+    public bool isVideoPlaying() { return videoPlaying; }
+    public void stopVideo()
+    {
+        videoDebut.Stop();
+        selectDaruma();
+        videoPlaying = false;
+    }
+    public void resumeGame()
+    {
+        StartCoroutine(fadeFromBlack());
+        pauseMenu.SetActive(false);
+    }
+    public void launchGame()
+    {
+        StartCoroutine(_launchGame());
+    }
+    IEnumerator _launchGame()
+    {
+        vieuxMan.SetActive(true);
+        videoPlaying = false;
+        darumaSelect.SetActive(false);
+
+        yield return  new WaitForSeconds(2);
+        soundController.playBackground();
+        pauseMenu.SetActive(false);
         timerTxt.color = new Color(0.9921569f, 0.9529412f, 0.8509805f, 1);
 
         print("begin");
         feu.SetActive(false);
         timeRemaining = 20;
         timerTxt.text = timeRemaining.ToString();
+
 
         StartCoroutine(fadeFromBlack());
         foreach (GameObject player in players)
@@ -145,7 +195,6 @@ public class LevelManager : MonoBehaviour
         }
         foodFallManager.GetComponent<FoodFall>().startGame();
         StartCoroutine(GameTimer());
-
     }
 
 }

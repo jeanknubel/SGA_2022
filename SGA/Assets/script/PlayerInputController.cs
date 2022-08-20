@@ -6,6 +6,9 @@ using UnityEngine.UI;
 public class PlayerInputController : MonoBehaviour
 {
     [SerializeField]
+    private LevelManager manager;
+
+    [SerializeField]
     private Transform ground_check;
 
     [SerializeField]
@@ -22,7 +25,6 @@ public class PlayerInputController : MonoBehaviour
 
     [SerializeField]
     private Vector2 aimDirection, autoAimDirection;
-
 
     [SerializeField]
     private Transform upStage;
@@ -57,6 +59,8 @@ public class PlayerInputController : MonoBehaviour
     private bool oldJumpTrigger;
     private bool jumped;
     private bool hasFallen;
+    private bool isSelectingDaruma;
+
     [SerializeField]
     private SoundController soundController;
     private float throwForce;
@@ -71,6 +75,7 @@ public class PlayerInputController : MonoBehaviour
     public void startGame()
     {
         roundPlaying = true;
+        isSelectingDaruma = false;
         isThrowing = false;
         hasFallen = false;
         respawn();
@@ -81,7 +86,12 @@ public class PlayerInputController : MonoBehaviour
         healthbar.GetComponent<Slider>().value = initialThrowForce;
 
         healthbar.SetActive(false);
+        throwForce = initialThrowForce;
 
+    }
+    public void selectDaruma()
+    {
+        isSelectingDaruma = true;
     }
     public void endRound()
     {
@@ -111,11 +121,18 @@ public class PlayerInputController : MonoBehaviour
 
     void Update()
     {
-        if (roundPlaying)
+        if (manager.isVideoPlaying())
+        {
+            if (receiver.Skip) manager.stopVideo();
+        }
+        if(roundPlaying || isSelectingDaruma)
+        {
+            triggerJump = receiver.Jump;
+        }
+        if (roundPlaying && !isSelectingDaruma)
         {
             //movement avec acceleration et jump noraml-----------------------------------------
             hInpt = receiver.HorizontalAxis;
-            triggerJump = receiver.Jump;
             lastFireRight = fireRight;
             lastFireLeft = fireLeft;
             fireRight = receiver.FireRight;
@@ -123,6 +140,7 @@ public class PlayerInputController : MonoBehaviour
             if ((!fireRight && lastFireRight) || (!fireLeft && lastFireLeft)) mustFire = true;
             if (fireRight && !lastFireRight) fireRightDown = true;
             if (fireLeft && !lastFireLeft) fireLeftDown = true;
+            if (receiver.Pause) manager.pauseGame();
             //----------------------------------------------------------------------------
         }
 
@@ -249,26 +267,31 @@ public class PlayerInputController : MonoBehaviour
             throwForce += forceBuild * Time.deltaTime;
             healthbar.GetComponent<Slider>().value = throwForce;
         }
-        if(mustFire)
+        if(mustFire && interactor.isHoldingFood() && !isOnToriLeft && !isOnToriRight)
         {
             throwEffect.SetActive(true);
-            throwEffect.GetComponent<Animator>().Play("Throw");
+            var animator = throwEffect.GetComponent<Animator>();
+            animator.Play("Throw", -1, 0f);
             GetComponent<PlayerFoodInteraction>().throwFood(throwVector * throwForce, false);
             throwForce = initialThrowForce;
             mustFire = false;
             healthbar.SetActive(false);
             healthbar.GetComponent<Slider>().value = initialThrowForce;
         }
-        if (fireRight && isOnToriLeft){
+        if (fireRight && isOnToriLeft && interactor.isHoldingFood()){
             transform.localScale = new Vector3(1, 1, 1);
             GetComponent<PlayerFoodInteraction>().throwFood(autoAimDirection, true);
             mustFire = false;
+            healthbar.SetActive(false);
+            fireRightDown = false;
 
         }
-        if ( fireLeft && isOnToriRight) {
+        if ( fireLeft && isOnToriRight && interactor.isHoldingFood()) {
             GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-autoAimDirection.x, autoAimDirection.y), true);
             transform.localScale = new Vector3(1, 1, 1);
             mustFire = false;
+            healthbar.SetActive(false);
+            fireLeftDown = false;
 
         }
         if (gameObject.transform.position.y <= -4.2 && !hasFallen)
