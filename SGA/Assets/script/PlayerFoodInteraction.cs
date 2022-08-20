@@ -26,15 +26,9 @@ public class PlayerFoodInteraction : MonoBehaviour
 
     public bool isHoldingFood() { return holdFood; }
     private void Start()
-    {
-        holdFood = false;
-        countTime = false;
-        food = null;
-        timer = 0;
+    {   
         receiver = GetComponent<PlayerInputReceiver>();
         controller = GetComponent<PlayerInputController>();
-        score = 0;
-        scoreTxt.text = "0";
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -46,13 +40,18 @@ public class PlayerFoodInteraction : MonoBehaviour
                 soundController.playSound(SoundController.Sound.PRENDRE_ALIMENT);
                 food = other;
                 food.transform.parent = transform;
-                food.transform.localPosition = Vector2.up * 0.75f;
+                food.transform.localPosition = Vector2.up * 0.8f;
                 food.transform.rotation = Quaternion.identity;
                 foodRb = other.GetComponent<Rigidbody2D>();
                 foodRb.velocity = Vector2.zero;
                 foodRb.bodyType = RigidbodyType2D.Kinematic;
                 foodRb.freezeRotation = true;
                 holdFood = true;
+                food.layer = LayerMask.NameToLayer("Default");
+            }
+            else
+            {
+                soundController.playSoundFx(SoundController.Sound.SAUT_ALIMENT);
             }
         }
     }
@@ -80,6 +79,7 @@ public class PlayerFoodInteraction : MonoBehaviour
             }
             else
             {
+                food.layer = LayerMask.NameToLayer("ThrownFood");
                 food.GetComponent<Rigidbody2D>().gravityScale = gravityThrownObject;
             }
             food.GetComponent<Rigidbody2D>().AddForce(direction * forceThrownObject, ForceMode2D.Impulse);
@@ -96,6 +96,16 @@ public class PlayerFoodInteraction : MonoBehaviour
     {
         score += amount;
         scoreTxt.text = score.ToString();
+    }
+    public int getScore() { return score; }
+    public void startGame()
+    {
+        holdFood = false;
+        countTime = false;
+        food = null;
+        timer = 0;
+        score = 0;
+        scoreTxt.text = "0";
     }
 
     private void FixedUpdate()

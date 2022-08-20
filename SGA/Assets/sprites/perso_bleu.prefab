@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 62124538203591410}
   - component: {fileID: 2284987500155727154}
   - component: {fileID: 2341556506869416113}
+  - component: {fileID: 1073930820592043624}
   m_Layer: 0
   m_Name: perso_bleu
   m_TagString: Untagged
@@ -66,6 +67,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 62124537705886063}
+  - {fileID: 2001994337771839709}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -218,6 +220,8 @@ MonoBehaviour:
   throwPowerMultiplier: 3
   throwTime: 0.2
   throwAnimation: PersoBleu_Throw
+  soundController: {fileID: 0}
+  scoreTxt: {fileID: 0}
 --- !u!114 &2341556506869416113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,8 +251,13 @@ MonoBehaviour:
   aimDirection: {x: 1, y: 1}
   autoAimDirection: {x: 2, y: -1}
   upStage: {fileID: 0}
+  throwEffect: {fileID: 0}
   canDoubleJump: 1
   doubleJumpForce: 7
+  forceBuild: 0
+  soundController: {fileID: 0}
+  initialThrowForce: 0
+  maxThrowForce: 0
   animationPending: PersoBleu_Pending
   animationFall: PersoBleu_Fall
   animationJump: PersoBleu_Jump
@@ -256,3 +265,87 @@ MonoBehaviour:
   animationRunFruit: PersoBleu_RunFruit
   animationThrow: PersoBleu_Throw
   animationWallJump: PersoBleu_WallJump
+  animationPendingFood: 
+  animationJumpFront: 
+--- !u!70 &1073930820592043624
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62124538203591407}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.016062262, y: 0.0040155076}
+  m_Size: {x: 0.9430096, y: 0.886794}
+  m_Direction: 0
+--- !u!1001 &2748905792720247201
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 62124538203591408}
+    m_Modifications:
+    - target: {fileID: 4015745798117174932, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.62
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.98039174
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.1970584
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 22.73
+      objectReference: {fileID: 0}
+    - target: {fileID: 7539940773736052477, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+      propertyPath: m_Name
+      value: throwAnim
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+--- !u!4 &2001994337771839709 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4462663157267134844, guid: cf933af3e15124041947b4c155c2ffab, type: 3}
+  m_PrefabInstance: {fileID: 2748905792720247201}
+  m_PrefabAsset: {fileID: 0}

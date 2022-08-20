@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerInputController : MonoBehaviour
 {
@@ -27,11 +28,17 @@ public class PlayerInputController : MonoBehaviour
     private Transform upStage;
 
     [SerializeField]
+    private GameObject throwEffect;
+
+    [SerializeField]
     private bool canDoubleJump;
     [SerializeField]
     private float doubleJumpForce;
     [SerializeField]
     private float forceBuild;
+
+    [SerializeField]
+    private GameObject healthbar;
 
     private Vector2 throwVector;
     private float hInpt;
@@ -45,40 +52,55 @@ public class PlayerInputController : MonoBehaviour
     private bool fireRight, fireLeft, isOnToriLeft, isOnToriRight, lastFireRight, lastFireLeft;
     private PlayerAnimator animator;
     private PlayerFoodInteraction interactor;
-    private bool gameStarted;
+    private bool roundPlaying;
     private bool isThrowing;
     private bool oldJumpTrigger;
     private bool jumped;
     private bool hasFallen;
     [SerializeField]
     private SoundController soundController;
-    private float throwForce, throwTime ;
+    private float throwForce;
     [SerializeField]
-    private float initialThrowForce, maxThrowTime;
+    private float initialThrowForce, maxThrowForce;
+    private bool mustFire;
+    private bool fireRightDown, fireLeftDown;
 
     [SerializeField]
     private string animationPending, animationFall, animationJump, animationRun, animationRunFruit, animationThrow, animationWallJump, animationPendingFood, animationJumpFront;
 
     public void startGame()
     {
-        gameStarted = true;
+        roundPlaying = true;
         isThrowing = false;
         hasFallen = false;
         respawn();
         jumped = false;
+        mustFire = false;
+        healthbar.GetComponent<Slider>().maxValue = maxThrowForce;
+        healthbar.GetComponent<Slider>().minValue = initialThrowForce;
+        healthbar.GetComponent<Slider>().value = initialThrowForce;
+
+        healthbar.SetActive(false);
+
+    }
+    public void endRound()
+    {
+        roundPlaying = false;
+        respawn();
     }
     public void setThrowing(bool value) { isThrowing = value; }
     private void Awake()
     {
         receiver = GetComponent<PlayerInputReceiver>();
         print(receiver);
-        gameStarted = false;
+        roundPlaying = false;
         rb = GetComponent<Rigidbody2D>();
 
     }
 
     private void Start()
     {
+        throwEffect.SetActive(false);
         animator = GetComponent<PlayerAnimator>();
         interactor = GetComponent<PlayerFoodInteraction>();
         groundLayer = LayerMask.GetMask("Ground", "Food");
@@ -89,7 +111,7 @@ public class PlayerInputController : MonoBehaviour
 
     void Update()
     {
-        if (gameStarted)
+        if (roundPlaying)
         {
             //movement avec acceleration et jump noraml-----------------------------------------
             hInpt = receiver.HorizontalAxis;
@@ -98,19 +120,21 @@ public class PlayerInputController : MonoBehaviour
             lastFireLeft = fireLeft;
             fireRight = receiver.FireRight;
             fireLeft = receiver.FireLeft;
+            if ((!fireRight && lastFireRight) || (!fireLeft && lastFireLeft)) mustFire = true;
+            if (fireRight && !lastFireRight) fireRightDown = true;
+            if (fireLeft && !lastFireLeft) fireLeftDown = true;
             //----------------------------------------------------------------------------
         }
 
     }
     private void FixedUpdate()
     {
-        if (fireRight) print("fire");
         bool wantJump = triggerJump && !oldJumpTrigger;
         //animation handling
         if (!isThrowing)
         {
             if (isOnWall) animator.changeAnimation(animationWallJump);
-            else if (rb.velocity.x == 0 && isGrounded && hInpt == 0)
+            else if (Mathf.Abs(rb.velocity.x) <= 0.000000001 && isGrounded && hInpt == 0)
             {
                 if (interactor.isHoldingFood()) animator.changeAnimation(animationPendingFood);
                 else animator.changeAnimation(animationPending);
@@ -127,14 +151,14 @@ public class PlayerInputController : MonoBehaviour
 
 
         //wall jump si on appuie dans la direction opposée de ou on vient
-        if (isOnWall && hInpt > 0 && Mathf.Abs(rb.velocity.x) <= 0.00000001)
+        if (isOnWall && hInpt == -playerDirection && Mathf.Abs(rb.velocity.x) <= 0.00000001)
         {
             soundController.playSound(SoundController.Sound.JUMP);
             rb.AddForce(new Vector2(wallJumpForce.x * -playerDirection, wallJumpForce.y), ForceMode2D.Impulse);
         }
 
-        //changement de direction
-        transform.localScale = new Vector3(hInpt > 0 ? 1: hInpt < 0 ? -1:  transform.localScale.x,  1, 1);
+        //changement de direction TODO: bug sur les tori
+        transform.localScale = new Vector3(hInpt > 0 ? 1: hInpt < 0 ? -1: fireRight ? 1 : fireLeft ? -1 : transform.localScale.x,  1, 1);
 
 
 
@@ -200,42 +224,52 @@ public class PlayerInputController : MonoBehaviour
 
         }
 
-        if (fireRight && !lastFireRight && !isOnToriLeft)
+        if (fireRightDown && !isOnToriLeft && interactor.isHoldingFood())
         {
+            healthbar.SetActive(true);
             throwVector = receiver.Aim;
+            fireRightDown = false;
             if (throwVector == Vector2.zero)
                 throwVector = aimDirection;
-            throwTime = 0;
             //GetComponent<PlayerFoodInteraction>().throwFood(aimDirection, false);
 
         }
-        if (fireLeft && !isOnToriRight && !lastFireLeft)
+        if (fireLeftDown && !isOnToriRight && interactor.isHoldingFood())
         {
+            healthbar.SetActive(true);
             throwVector = receiver.Aim;
+            fireLeftDown = false;
             if (throwVector == Vector2.zero)
                 throwVector = new Vector2(-aimDirection.x, aimDirection.y);
             //GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-aimDirection.x, aimDirection.y), false);
-            throwTime = 0;
 
         }
-        if (((fireLeft && lastFireLeft) || (fireRight && lastFireRight)) && throwTime <= maxThrowTime)
+        if (((fireLeft && lastFireLeft) || (fireRight && lastFireRight)) && throwForce <= maxThrowForce && interactor.isHoldingFood())
         {
-            throwForce += forceBuild;
-            throwTime += Time.deltaTime;
-            print(throwForce);
+            throwForce += forceBuild * Time.deltaTime;
+            healthbar.GetComponent<Slider>().value = throwForce;
         }
-        if(!fireRight && lastFireRight)
+        if(mustFire)
         {
-            print("fire");
+            throwEffect.SetActive(true);
+            throwEffect.GetComponent<Animator>().Play("Throw");
+            GetComponent<PlayerFoodInteraction>().throwFood(throwVector * throwForce, false);
+            throwForce = initialThrowForce;
+            mustFire = false;
+            healthbar.SetActive(false);
+            healthbar.GetComponent<Slider>().value = initialThrowForce;
         }
-        if ((fireRight || fireLeft) && isOnToriLeft){
+        if (fireRight && isOnToriLeft){
             transform.localScale = new Vector3(1, 1, 1);
             GetComponent<PlayerFoodInteraction>().throwFood(autoAimDirection, true);
+            mustFire = false;
 
         }
-        if ((fireRight || fireLeft) && isOnToriRight) {
+        if ( fireLeft && isOnToriRight) {
             GetComponent<PlayerFoodInteraction>().throwFood(new Vector2(-autoAimDirection.x, autoAimDirection.y), true);
             transform.localScale = new Vector3(1, 1, 1);
+            mustFire = false;
+
         }
         if (gameObject.transform.position.y <= -4.2 && !hasFallen)
         {
@@ -250,10 +284,25 @@ public class PlayerInputController : MonoBehaviour
 
         if (other.layer == LayerMask.NameToLayer("Player"))
         {
+            soundController.playSound(SoundController.Sound.COLLISION);
             Vector2 ejection = collision.GetContact(0).normal;
             if (ejection.y != 0) ejection.y /= 2;
 
             rb.AddForce(ejection * knockback, ForceMode2D.Impulse);
+        }
+        if (other.layer == LayerMask.NameToLayer("ThrownFood"))
+        {
+            int score = other.gameObject.GetComponent<FoodData>().getScore();
+            if (score < 0)
+            {
+                Vector2 ejection = collision.GetContact(0).normal;
+                ejection.y = 0.3f;
+                ejection.x = ejection.x > 0 ? -1 : 1;
+                print(ejection);
+                GetComponent<PlayerFoodInteraction>().addScore(score);
+                rb.AddForce(ejection * knockback * 2 , ForceMode2D.Impulse);
+            }
+            //other.layer = LayerMask.NameToLayer("Food");
         }
     }
 

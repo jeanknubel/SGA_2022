@@ -10,4 +10,8 @@ public class VieuxManSound : MonoBehaviour
     {
         soundController.startGame();
     }
+    public void playBackGround()
+    {
+        soundController.playBackground();
+    }
 }

@@ -39,6 +39,11 @@ public class FoodFall : MonoBehaviour
         StartCoroutine(foodSpawnCoroutine());
     }
 
+    public void stopGame()
+    {
+        StopCoroutine(foodSpawnCoroutine());
+    }
+
     IEnumerator foodSpawnCoroutine()
     {
         while (true)
